@@ -1,20 +1,38 @@
+import { useState } from 'react';
 import Button from '@mui/material/Button';
-import InputField from '../../../components/FormFields/Input';
-
+import CircularProgress from '@mui/material/CircularProgress';
 import { useFormik } from 'formik';
 
+import InputField from '../../../components/FormFields/Input';
+import Toast from '../../../components/Toast';
+
+import userService from '../../../services/user';
+import { IUserRegister } from '../../../inferface/user';
 import validationSchema from './validation';
 import * as Styles from './styles';
 
 const Register = () => {
+  const [submitting, setSubmitting] = useState(false);
   const formik = useFormik({
     initialValues: {
+      name: '',
       email: '',
       password: '',
       confirmPassword: '',
-    },
-    onSubmit: (values) => {
-      alert(JSON.stringify(values, null, 2));
+    } as IUserRegister,
+    onSubmit: async (values, formikHelpers) => {
+      try {
+        setSubmitting(true);
+        const copyData = { ...values };
+        delete copyData.confirmPassword;
+        await userService.createUser(copyData);
+        Toast.success('Usuário criado com sucesso!');
+        formikHelpers.resetForm();
+      } catch (error: any) {
+        Toast.error(`Erro ao criar usuário! ${error?.response?.data?.message}`);
+      } finally {
+        setSubmitting(false);
+      }
     },
     validationSchema,
     validateOnMount: true,
@@ -24,6 +42,14 @@ const Register = () => {
     <Styles.WrapperContainer>
       <form onSubmit={formik.handleSubmit}>
         <Styles.WrapperForm>
+          <InputField
+            name='name'
+            type='name'
+            label='Nome'
+            variant='outlined'
+            autoComplete='off'
+            form={formik}
+          />
           <InputField
             name='email'
             type='email'
@@ -48,7 +74,12 @@ const Register = () => {
             autoComplete='new-password'
             form={formik}
           />
-          <Button type='submit' variant='contained' disabled={!formik?.isValid}>
+          <Button
+            type='submit'
+            variant='contained'
+            disabled={!formik?.isValid || submitting}
+            startIcon={submitting && <CircularProgress size={18} />}
+          >
             Cadastrar
           </Button>
         </Styles.WrapperForm>

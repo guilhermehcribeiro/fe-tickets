@@ -1,6 +1,7 @@
 import * as Yup from 'yup';
 
 const validationSchema = Yup.object({
+  name: Yup.string().nullable().required('Por favor, preencha esse campo'),
   email: Yup.string()
     .email()
     .nullable()
