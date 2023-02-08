@@ -1,7 +1,7 @@
 import { post } from '../helpers/api';
 
 async function createUser(data: any) {
-  const req = await post('/user', data);
+  const req = await post('/users', data);
   return req?.data;
 }
 

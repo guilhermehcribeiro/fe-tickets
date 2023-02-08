@@ -40,7 +40,12 @@ const Login = () => {
             autoComplete='new-password'
             form={formik}
           />
-          <Button type='submit' variant='contained' disabled={!formik?.isValid}>
+          <Button
+            type='submit'
+            variant='contained'
+            disabled={!formik?.isValid}
+            style={{ height: '50px' }}
+          >
             Entrar
           </Button>
         </Styles.WrapperForm>

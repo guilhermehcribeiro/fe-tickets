@@ -79,6 +79,7 @@ const Register = () => {
             variant='contained'
             disabled={!formik?.isValid || submitting}
             startIcon={submitting && <CircularProgress size={18} />}
+            style={{ height: '50px' }}
           >
             Cadastrar
           </Button>
