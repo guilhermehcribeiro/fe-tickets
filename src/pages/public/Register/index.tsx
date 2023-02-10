@@ -8,8 +8,10 @@ import Toast from '../../../components/Toast';
 
 import userService from '../../../services/user';
 import { IUserRegister } from '../../../inferface/user';
+import { encryptPassword } from '../../../helpers/encrypt';
 import validationSchema from './validation';
 import * as Styles from './styles';
+import { Navigate } from 'react-router-dom';
 
 const Register = () => {
   const [submitting, setSubmitting] = useState(false);
@@ -23,7 +25,10 @@ const Register = () => {
     onSubmit: async (values, formikHelpers) => {
       try {
         setSubmitting(true);
-        const copyData = { ...values };
+        const copyData = {
+          ...values,
+          password: encryptPassword(values?.password),
+        };
         delete copyData.confirmPassword;
         await userService.createUser(copyData);
         Toast.success('Usuário criado com sucesso!');
@@ -37,6 +42,9 @@ const Register = () => {
     validationSchema,
     validateOnMount: true,
   });
+
+  if (localStorage.getItem('tickets_token'))
+    return <Navigate to='/dashboard' />;
 
   return (
     <Styles.WrapperContainer>

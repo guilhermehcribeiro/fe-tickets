@@ -1,24 +1,49 @@
-import Button from '@mui/material/Button';
-import InputField from '../../../components/FormFields/Input';
-
+import { useState } from 'react';
+import { Link, Navigate, useNavigate } from 'react-router-dom';
 import { useFormik } from 'formik';
+import Button from '@mui/material/Button';
+import CircularProgress from '@mui/material/CircularProgress';
+
+import InputField from '../../../components/FormFields/Input';
 
 import validationSchema from './validation';
 import * as Styles from './styles';
-import { Link } from 'react-router-dom';
+import authService from '../../../services/auth';
+import Toast from '../../../components/Toast';
+import { encryptPassword } from '../../../helpers/encrypt';
 
 const Login = () => {
+  const navigate = useNavigate();
+  const [submitting, setSubmitting] = useState(false);
+
   const formik = useFormik({
     initialValues: {
       email: '',
       password: '',
     },
-    onSubmit: (values) => {
-      alert(JSON.stringify(values, null, 2));
+    onSubmit: async (values) => {
+      try {
+        setSubmitting(true);
+
+        const copyData = {
+          ...values,
+          password: encryptPassword(values?.password),
+        };
+
+        await authService.loginUser(copyData);
+        navigate('/dashboard');
+      } catch (error: any) {
+        Toast.error('Login inválido. Tente novamente');
+      } finally {
+        setSubmitting(false);
+      }
     },
     validationSchema,
     validateOnMount: true,
   });
+
+  if (localStorage.getItem('tickets_token'))
+    return <Navigate to='/dashboard' />;
 
   return (
     <Styles.WrapperContainer>
@@ -43,7 +68,8 @@ const Login = () => {
           <Button
             type='submit'
             variant='contained'
-            disabled={!formik?.isValid}
+            disabled={!formik?.isValid || submitting}
+            startIcon={submitting && <CircularProgress size={18} />}
             style={{ height: '50px' }}
           >
             Entrar
