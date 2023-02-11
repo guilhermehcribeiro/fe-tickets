@@ -11,6 +11,7 @@ import * as Styles from './styles';
 import authService from '../../../services/auth';
 import Toast from '../../../components/Toast';
 import { encryptPassword } from '../../../helpers/encrypt';
+import { getCookie } from '../../../helpers/cookie';
 
 const Login = () => {
   const navigate = useNavigate();
@@ -42,8 +43,7 @@ const Login = () => {
     validateOnMount: true,
   });
 
-  if (localStorage.getItem('tickets_token'))
-    return <Navigate to='/dashboard' />;
+  if (getCookie('tickets_token')) return <Navigate to='/dashboard' />;
 
   return (
     <Styles.WrapperContainer>

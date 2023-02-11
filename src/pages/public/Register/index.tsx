@@ -12,6 +12,7 @@ import { encryptPassword } from '../../../helpers/encrypt';
 import validationSchema from './validation';
 import * as Styles from './styles';
 import { Navigate } from 'react-router-dom';
+import { getCookie } from '../../../helpers/cookie';
 
 const Register = () => {
   const [submitting, setSubmitting] = useState(false);
@@ -43,8 +44,7 @@ const Register = () => {
     validateOnMount: true,
   });
 
-  if (localStorage.getItem('tickets_token'))
-    return <Navigate to='/dashboard' />;
+  if (getCookie('tickets_token')) return <Navigate to='/dashboard' />;
 
   return (
     <Styles.WrapperContainer>
